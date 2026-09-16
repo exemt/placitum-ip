@@ -1,0 +1,4 @@
+# The default profile: no rules, allow. The process does not start without it; a controller
+# generation replaces this tree as a whole.
+rules: []
+default: allow

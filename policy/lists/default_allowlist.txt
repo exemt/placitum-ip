@@ -1,0 +1,1 @@
+# Default allowlist, empty at install. One prefix or address per line.
