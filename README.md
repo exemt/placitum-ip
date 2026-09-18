@@ -130,7 +130,7 @@ In a generation the file names are uuids; a hand-written tree with readable name
 code. A read error keeps the current snapshot, and a rule that names an unknown set fails the whole
 load: half a policy is worse than the old one.
 
-**Live sets** (lists marked active in the panel) never travel in a generation: it carries only their
+**Active sets** (lists marked active in the panel) never travel in a generation: it carries only their
 uuid and name. keeper keeps the content and the inspector mirrors it: notices over `waf.sets.<name>`,
 change packs and snapshots from the internal Redis, a hash check at every step. A ban set by a
 neighbour works here within milliseconds. A set that has not warmed up is a miss, not a denial: a list

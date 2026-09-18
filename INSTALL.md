@@ -16,14 +16,14 @@ configuration. Usually `placitum-core` installs it.
 | `keeper` | for live sets | keeps their content; the inspector mirrors it and sends `list` writes there |
 | `geo` | for `net`, `net_all` and `asn` writes | announcements and AS number by address |
 
-The inspector does not need the exchange: the address comes in the message.
+The inspector does not need the buffer: the address comes in the message.
 
 ## Settings
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `NATS_URL` | `nats://127.0.0.1:4222` | bus; several addresses are comma-separated |
-| `REDIS_INTERNAL_URL` | from `inspector.conf` | internal Redis; there is no fallback to the exchange |
+| `REDIS_INTERNAL_URL` | from `inspector.conf` | internal Redis; there is no fallback to the buffer |
 | `WAF_IP_SUBJECT` | `waf.req.ip` | subscription; must match `subject=` in the inspector declaration |
 | `WAF_IP_NAME` | `ip` | name in the inspector registry and the presence frame |
 | `WAF_IP_QUEUE` | the name | queue group on the bus |
@@ -77,7 +77,7 @@ and it carries the live set state too.
 
 - **An empty `WAF_IP_GEO_ADDR`** makes network and system writes answer `error` rather than pass
   silently: "could not check" and "checked, all clean" are different answers.
-- **Live sets do not come with the generation.** The generation carries profiles, keeper keeps the
+- **Active sets do not come with the generation.** The generation carries profiles, keeper keeps the
   content. A converged generation does not mean the content has arrived; the presence frame shows it.
 - **A copy keeps no state.** After a restart it fetches live set snapshots again; until they warm up,
   list rules answer with what has already arrived.
