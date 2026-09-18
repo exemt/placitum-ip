@@ -104,7 +104,7 @@ When the inspector cannot check, it answers `error`, and the route decides with 
 | `IP_UNKNOWN_PROFILE` | the route names a profile that does not exist |
 | `IP_MALFORMED` | the client address is empty or does not parse |
 | `IP_MISSING_SET` | a set or list named by the profile has not arrived |
-| `IP_GEO_UNAVAILABLE` | a `net`, `net_all` or `asn` write needs the geo coder, and it does not answer |
+| `IP_GEO_UNAVAILABLE` | a `net`, `net_all` or `asn` write needs the network directory, and it does not answer |
 
 ## Where the data comes from
 

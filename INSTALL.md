@@ -36,8 +36,8 @@ The inspector does not need the buffer: the address comes in the message.
 | `WAF_IP_QUEUE_DEPTH`, `WAF_IP_QUEUE_FULL`, `WAF_IP_QUEUE_EXPAND` | `256`, `drop`, `off` | queue and overflow behaviour; the same through `inspector.conf` |
 | `WAF_IP_RESERVE_MS`, `WAF_IP_MIN_BUDGET_MS` | `1`, `1` | reserve for the answer and the minimum budget below which a check does not start |
 | `WAF_IP_VERSIONS` | `2` | accepted message schema versions |
-| `WAF_IP_GEO_ADDR` | empty | geo coder (`host:port`); empty makes `net`, `net_all` and `asn` writes answer `error` |
-| `WAF_IP_GEO_TIMEOUT`, `WAF_IP_GEO_NEG_MAX` | `500ms`, `0` | coder wait within the message budget and negative cache limit (`0` means a million entries) |
+| `WAF_IP_GEO_ADDR` | empty | network directory (`host:port`); empty makes `net`, `net_all` and `asn` writes answer `error` |
+| `WAF_IP_GEO_TIMEOUT`, `WAF_IP_GEO_NEG_MAX` | `500ms`, `0` | network directory wait within the message budget and negative cache limit (`0` means a million entries) |
 | `WAF_IP_LOG` | `info` | starting log level; the panel changes it live |
 | `WAF_HEARTBEAT_EVERY` | `4s` | presence frame interval |
 | `WAF_LOG_SHIP` | `on` | whether the process log goes to the bus; `off` keeps it on stdout only |
