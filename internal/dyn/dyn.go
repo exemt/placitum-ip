@@ -2,6 +2,7 @@ package dyn
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -89,6 +90,7 @@ type frame struct {
 	Hash    string `json:"hash"`
 	Key     string `json:"key"`
 	Package string `json:"package"`
+	Inline  string `json:"inline"`
 	Object  string `json:"object"`
 	Count   int    `json:"count"`
 }
@@ -443,6 +445,21 @@ func (s *Store) onFrame(set *Set, f frame) {
 			s.verify(set, f.Hash, f.Op)
 		}
 	default:
+		/*
+		 * A package one step ahead rides inside the frame: it is applied
+		 * without a read from Redis. Anything further behind, and a frame
+		 * that cannot be decoded, is read from Redis by key as before.
+		 */
+		if f.Op == opDiff && f.Inline != "" && f.Seq == mySeq+1 {
+			if data, err := base64.StdEncoding.DecodeString(f.Inline); err == nil {
+				s.applyPackage(set, data, f.Seq)
+
+				return
+			}
+
+			s.log.Warn("inline package is not base64, reading it from redis", "set", set.Name, "seq", f.Seq)
+		}
+
 		s.catchUp(set, f.Seq, f.Hash)
 	}
 }
