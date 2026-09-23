@@ -6,8 +6,8 @@ Placitum address inspector. It decides by the client address: the address itself
 country and its autonomous system, plus live lists that change on the fly.
 
 It is the cheapest inspector and usually goes first in the wave: it answers in a fraction of a
-millisecond and cuts off what the expensive checks do not need to see. It reads neither headers nor
-the body and works only in the request phase.
+millisecond and cuts off what the expensive checks do not need to see. It uses the address alone,
+without headers or the body, and works in the request phase.
 
 ```
 module ──► waf.req.ip ──►  ip  ──► allow | deny
@@ -19,7 +19,7 @@ module ──► waf.req.ip ──►  ip  ──► allow | deny
 ## Sets
 
 A set is a named expression over raw data: address lists, live lists, countries and autonomous
-systems, minus exclusions. It says who the address is and decides nothing.
+systems, minus exclusions. It answers who the address is; the rules of the profile decide.
 
 ```yaml
 # sets.yaml
@@ -73,15 +73,15 @@ outcomes:
 
 The verdict takes three steps:
 
-1. **Allow rows** are checked first, wherever they stand: a match gives `allow` at once. An exception
+1. Allow rows are checked first, wherever they stand: a match gives `allow` at once. An exception
    must beat a block however the rows are ordered.
-2. **Deny rows** go top to bottom, and the first match gives `deny`. `response` names the deny page
+2. Deny rows go top to bottom, and the first match gives `deny`. `response` names the deny page
    record (`blocked` by default), `code` the reason.
-3. **`default`** answers when nothing matched: `allow` (the default) or `deny`.
+3. `default` answers when nothing matched: `allow` (the default) or `deny`.
 
 There is no score: the verdict is one of the two.
 
-**Request and list rows** do not decide and work with either verdict, allow included: "this address
+Request and list rows work with either verdict, allow included, and do not change it: "this address
 is ours, go easy on it" is a statement about the allow list. They check a raw list (`dataset`) rather
 than a set, and `not: true` fires when the address is not in it.
 
@@ -92,7 +92,7 @@ than a set, and `not: true` fires when the address is not in it.
   to write: the address (`addr`, the default), its effective announcement (`net`), every announcement
   over it, including wider ones of other systems (`net_all`), or the whole autonomous system (`asn`).
 
-**Outcome rows** (`outcomes`) take the same actions and fire on where the address ended up: `white`
+Outcome rows (`outcomes`) take the same actions and fire on where the address ended up: `white`
 (an allow row matched), `black` (a deny row matched) or `none` (`default` answered). `overload` fires
 on the inspector's own queue: with `at` (25–100) once the queue is `at` percent full, without it only
 when the request is dropped.
@@ -127,14 +127,14 @@ profiles/<name>.yaml    profiles
 ```
 
 In a generation the file names are uuids; a hand-written tree with readable names is read by the same
-code. A read error keeps the current snapshot, and a rule that names an unknown set fails the whole
-load: half a policy is worse than the old one.
+code. A read error, or a rule that names an unknown set, fails the whole load, and the current
+snapshot stays in place.
 
-**Active sets** (lists marked active in the panel) never travel in a generation: it carries only their
+Active sets (lists marked active in the panel) never travel in a generation: it carries only their
 uuid and name. keeper keeps the content and the inspector mirrors it: notices over `waf.sets.<name>`,
 change packs and snapshots from the internal Redis, a hash check at every step. A ban set by a
-neighbour works here within milliseconds. A set that has not warmed up is a miss, not a denial: a list
-that has not arrived must not close a route. `list` writes go to keeper after the answer, so a failed
+neighbour works here within milliseconds. A set that has not arrived yet counts as a miss, so a list
+that is still loading cannot close a route. `list` writes go to keeper after the answer, so a failed
 write does not cost the verdict.
 
 ## In the audit
